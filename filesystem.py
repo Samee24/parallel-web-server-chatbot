@@ -17,17 +17,13 @@ def displayFile(uid):
     try:
         #requires that files are stored in seperate directory files
         filePath = "files/" + uid + ".txt"
-        file = open(filepath, 'r')
 
-        packet = file.read(2000) # read 2 kilobytes from file
-        while packet != '': # while not EOF
-            # send packet to page
-            packet = file.read(2000)
-
+        lines = [line.strip('\n') for line in open(filepath, 'r')]
+        self.write_message(packet) # send packet to page
+        file.close()
     except IOError:
-        pass                    # send info that file 
+        self.write_message("404: File Not Found")
 
-   file.close()
 
 
 def chat(uid):
@@ -38,7 +34,7 @@ def chat(uid):
     stillChatting = True       #need some way to determine when still chatting
 
     while stillChatting:
-        file.write()            #get user input
+        file.write(message.get('author')            #get user input
         file.write("\n")
         file.write()            #get chatbot response
 
@@ -51,12 +47,12 @@ def start():
 
     if returningUser:
 
-        currentUsername = ''    # have user enter their name
-        currentAge = 0          # have user enter age
-        currentPassword = '1234' # have user enter their password
+        currentUsername = message.get('author')    # have user enter their name
+        currentAge = message.get('age')          # have user enter age
+        currentPassword = message.get('password') # have user enter their password
 
         try:
-            currentUser = backend.get(Person,{'name' : currentUsername, 'age' : currentAge, 'password' : currentPassword})
+            currentUser = backend.get(Person,{'author' : currentUsername, 'age' : currentAge, 'password' : currentPassword})
 
             wantsToChat = True  # see if user wants to chat or see file
     
@@ -70,12 +66,12 @@ def start():
             pass                # if can't find user
 
     else: # new user
-        newName = ''            # get their name
-        newAge = 30             # get their age
-        newPassword = ''        # get their password
+        newName = message.get('author')   # get their name from message in python.py
+        newAge = message.get('age')   # optional, would need another field
+        newPassword = message.get('password')   # get their password
         newID = uuid.uuid4()
     
-        newUser = Person({ 'name' : newName,
+        newUser = Person({ 'author' : newName,
                            'age' : newAge,
                            'password' : newPassword,
                            'unique_id' : newID
