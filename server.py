@@ -17,8 +17,7 @@ class WebSocketChatHandler(tornado.websocket.WebSocketHandler):
 
   def on_message(self, message):        
     print message
-    for client in clients:
-      client.write_message(message)
+    self.write_message(message)
         
   def on_close(self):
     clients.remove(self)
