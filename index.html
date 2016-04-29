@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <script type="text/javascript">
+<head>
+  <meta charset="utf-8">
+  <script type="text/javascript">
       // Basic functionality from http://code.runnable.com/UqDMKY-VwoAMABDk/simple-websockets-chat-with-tornado-for-python
       var ws;
       
@@ -36,32 +36,48 @@
       
       function sendMessage() {
         var data = { author: document.getElementById("username").value,
-                     message: document.getElementById("message").value };
+        message: document.getElementById("message").value };
         
         if(data.author && data.message) {
           ws.send(JSON.stringify(data));
         }
       }
-      
-      window.onload = function() {
-        var messageContainer = document.getElementById("chat");
-        if("WebSocket" in window) {
-          messageContainer.appendChild(createChatEntry("[SYSTEM]", "WebSocket is supported by your browser!"));
-          messageContainer.appendChild(createChatEntry("[SYSTEM]", "Pick a username and start sending out messages."));
-          openWS(messageContainer);
-        }
-        else {
-          messageContainer.appendChild(createChatEntry("[SYSTEM]", "WebSocket is NOT supported by your browser!"));
-        }
+
+      function sendUser(data) {
+       if( ws.readyState == 1 ) {
+        ws.send(JSON.stringify(data));
+      } else {
+        setTimeout(function() { sendUser(data); }, 1000);
       }
-    </script>
-  </head>
-  <body>
-    <div id="chat" style="width: 100%; height: 40em; overflow: scroll; font-family: Arial"></div>
-    <div id="input_area">
-      <input id="username" type="text" placeholder="Your username" style="display: block; width: 200px"></input>
-      <textarea id="message" placeholder="Your message" style="display: block; width: 400px"></textarea>
-      <button onclick="sendMessage()" style="display: block">Send</button>
-    </div>
-  </body>
+    }
+
+    window.onload = function() {
+      var messageContainer = document.getElementById("chat");
+      if("WebSocket" in window) {
+        messageContainer.appendChild(createChatEntry("[SYSTEM]", "WebSocket is supported by your browser!"));
+        messageContainer.appendChild(createChatEntry("[SYSTEM]", "Pick a username and start sending out messages."));
+        var user = window.prompt("Enter your username:", "username");
+        openWS(messageContainer);
+        if( user != null ) {
+         data = { type: "username", message: "user" };
+         sendUser(data);
+       } else {
+        messageContainer.appendChild(createChatEntry("[SYSTEM]", "Not a valid username. Beginning a new session. Your conversation will not be saved."));
+        data = { type: "username", message: "anonymous" };
+      }
+    }
+    else {
+      messageContainer.appendChild(createChatEntry("[SYSTEM]", "WebSocket is NOT supported by your browser!"));
+    }
+  }
+  </script>
+</head>
+<body>
+  <div id="chat" style="width: 100%; height: 40em; overflow: scroll; font-family: Arial"></div>
+  <div id="input_area">
+    <input id="username" type="text" placeholder="Your username" style="display: block; width: 200px"></input>
+    <textarea id="message" placeholder="Your message" style="display: block; width: 400px"></textarea>
+    <button onclick="sendMessage()" style="display: block">Send</button>
+  </div>
+</body>
 </html>
