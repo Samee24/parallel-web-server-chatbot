@@ -41,7 +41,7 @@ def chat(uid):
 
     file.close()
 
-def start():
+def start(message):
 
     returningUser = True        # need to see if user is returning
 
@@ -83,4 +83,4 @@ def start():
         
 
 if __name__ == '__main__':
-    start()
+    start('')
