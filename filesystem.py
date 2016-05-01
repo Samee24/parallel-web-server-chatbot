@@ -34,9 +34,8 @@ def chat(uid):
     stillChatting = True       #need some way to determine when still chatting
 
     while stillChatting:
-        file.write(message.get('author')            #get user input
-        file.write("\n")
-        file.write()            #get chatbot response
+        file.write(message.get('author') + ": " + message.get('message') + "\n") #get user input
+        file.write("bot does not respond yet\n")    #get chatbot response
 
 
     file.close()
@@ -63,7 +62,7 @@ def start(message):
                 displayFile(currentUser.unique_id)
                 
         except Person.DoesNotExist:
-            pass                # if can't find user
+            self.write_message("User does not exist")  # if can't find user
 
     else: # new user
         newName = message.get('author')   # get their name from message in python.py
