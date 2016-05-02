@@ -14,72 +14,64 @@ class Person(Docuement):
 
 
 def displayFile(uid):
-    try:
-        #requires that files are stored in seperate directory files
-        filePath = "files/" + uid + ".txt"
+    #requires that files are stored in seperate directory files
+    filePath = "files/" + uid + ".txt"
 
-        lines = [line.strip('\n') for line in open(filepath, 'r')]
-        self.write_message(packet) # send packet to page
-        file.close()
+    try:
+        lines = [line.strip('\n') for line in open(filepath, 'r')]       
     except IOError:
         self.write_message("404: File Not Found")
 
+    else:
+        for line in lines:
+            self.write_message(line) 
+        file.close()
 
 
-def chat(uid):
+
+def chat(uid, userInput, botResponse):
     filePath = "files/" + uid + ".txt"
     file = open(filepath, 'a')  # opens file for appending
                                 # creates new file if not already there
 
-    stillChatting = True       #need some way to determine when still chatting
-
-    while stillChatting:
-        file.write(message.get('author') + ": " + message.get('message') + "\n") #get user input
-        file.write("bot does not respond yet\n")    #get chatbot response
-
+    # get user input
+    file.write(userInput.get('author') + ": " + userInput.get('message') + "\n")
+    # get chatbot response
+    file.write("bot does not respond yet\n")    
 
     file.close()
 
 def start(message):
 
-    returningUser = True        # need to see if user is returning
+    currentUsername = '' # get username from prompt
+    currentPassword = '' # get password from prompt
+    # maybe one more identifier from prompt?
 
-    if returningUser:
+    try:
+        currentUser = backend.get(Person,{'user' : currentUsername,
+                                          'password' : currentPassword
+                                          # would add identifier here
+                                          })
 
-        currentUsername = message.get('author')    # have user enter their name
-        currentAge = message.get('age')          # have user enter age
-        currentPassword = message.get('password') # have user enter their password
-
-        try:
-            currentUser = backend.get(Person,{'author' : currentUsername, 'age' : currentAge, 'password' : currentPassword})
-
-            wantsToChat = True  # see if user wants to chat or see file
-    
-            if wantsToChat:
-                chat(currentUser.unique_id)
-
-            else:
-                displayFile(currentUser.unique_id)
-                
-        except Person.DoesNotExist:
-            self.write_message("User does not exist")  # if can't find user
-
-    else: # new user
-        newName = message.get('author')   # get their name from message in python.py
-        newAge = message.get('age')   # optional, would need another field
-        newPassword = message.get('password')   # get their password
-        newID = uuid.uuid4()
-    
-        newUser = Person({ 'author' : newName,
-                           'age' : newAge,
-                           'password' : newPassword,
-                           'unique_id' : newID
+    except Person.DoesNotExist:
+        newUser = Person({ 'user' : currentUsername,
+                           'password' : currentPassword,
+                           # would add identifier here
+                           'unique_id' : uuid.uuid4()
                            })
-
-        backend.save(newUser)
-        backend.commit()        # commits changes to disk
-
         
+        backend.save(newUser)
+        backend.commit()
+        
+        return newUser.unique_id
+
+    except Person.MultipleDocumentsReturned:
+        pass
+    
+    else:
+        return currentUser.unique_id
+        
+
 
 if __name__ == '__main__':
     start('')
