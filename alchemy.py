@@ -5,6 +5,8 @@ alchemyapi = AlchemyAPI()
 # Some phrases that will be used by the bot
 GREETING_PROMPT = "Hey there, student!"
 ERROR_PROMPT = "Hey, I couldn't really understand you. Try saying that again."
+DIVERSITY_PROMPT = "We are a very inclusive college, by virtue of our data-drive approach"
+SHACS_PROMPT = "Have you heard of SHACS? It's a magical place where all of your health problems will get solved! It's open Mon-Fri, 8 am - 5 pm and is located at the bottom of the forum! Here's a Google maps link: https://goo.gl/maps/T472hRBidgN2"
 # Print opening message
 # print("Hey, I'm Rayk! Your friendly neighborhood president!.")
 # Our set of rules --  a dictionary
@@ -12,7 +14,13 @@ rule_dict = {
     'hello': GREETING_PROMPT,
     'hi': GREETING_PROMPT,
     "what's up": GREETING_PROMPT,
-    'hey': GREETING_PROMPT
+    'hey': GREETING_PROMPT,
+    'health': SHACS_PROMPT,
+    'stressed': SHACS_PROMPT,
+    'help': SHACS_PROMPT,
+    'sick': SHACS_PROMPT,
+    'inclusivity': DIVERSITY_PROMPT,
+    'diversity': DIVERSITY_PROMPT
   }
 
 def getRaykResponse(user_input):    # return chat bot response
@@ -27,7 +35,7 @@ def getRaykResponse(user_input):    # return chat bot response
         if word.lower() in rule_dict:
           return rule_dict[word.lower()]
         else:
-          print(ERROR_PROMPT)
+          return ERROR_PROMPT
   else:
       print('Error in keyword extaction call: ', response_key['statusInfo'])
 
