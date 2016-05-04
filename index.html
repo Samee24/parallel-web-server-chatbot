@@ -60,15 +60,17 @@
       if("WebSocket" in window) {
         messageContainer.appendChild(createChatEntry("[SYSTEM]", "WebSocket is supported by your browser!"));
         messageContainer.appendChild(createChatEntry("[SYSTEM]", "Pick a username and start sending out messages."));
-        username = window.prompt("Enter your username:", "username");
+        username = window.prompt("Enter your username, or leave blank if you wish to remain anonymous:");
         openWS(messageContainer);
-        if( username != null ) {
-         data = { type: "username", user: username, password: "pass" };
-         sendUser(data);
-       } else {
-        messageContainer.appendChild(createChatEntry("[SYSTEM]", "Not a valid username. Beginning a new session. Your conversation will not be saved."));
-        data = { type: "username", message: "anonymous",
-                 password: "pass" };
+        if( username != "" ) {      
+          pass = window.prompt("Enter a password to save your session:")
+          data = { type: "username", user: username, password: pass };
+          sendUser(data);
+        } else {
+          username = "Anonymous";
+          data = { type: "username", user: "Anonymous",
+                   password: "" };
+          sendUser(data);
       }
       document.getElementById('message').onkeyup = function(event) {
         if (event.keyCode == 13) {
