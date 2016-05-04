@@ -44,6 +44,7 @@
         if(username && data.message) {
           ws.send(JSON.stringify(data));
         }
+
       }
 
       function sendUser(data) {
@@ -68,6 +69,13 @@
         messageContainer.appendChild(createChatEntry("[SYSTEM]", "Not a valid username. Beginning a new session. Your conversation will not be saved."));
         data = { type: "username", message: "anonymous",
                  password: "pass" };
+      }
+      document.getElementById('message').onkeyup = function(event) {
+        if (event.keyCode == 13) {
+          // If return is pressed, send the contents of the chatbox.
+          sendMessage();
+          event.target.value = ''; // Clear the chat box
+        }
       }
     }
     else {
