@@ -32,9 +32,9 @@ def getRaykResponse(user_input):    # return chat bot response
       print('Error in keyword extaction call: ', response_key['statusInfo'])
 
 def calculateDelay(response):  # return delay in seconds for each reponse using WPM = 90
-    delay = len(response.split())/1.5
-    if (delay > 4):
-      delay = 4
+  delay = len(response.split())/1.5
+  if (delay > 4):
+    delay = 4
   return delay
 
 
