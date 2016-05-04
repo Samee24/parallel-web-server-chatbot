@@ -2,6 +2,7 @@
 import tornado.ioloop
 import tornado.web
 import tornado.websocket
+import json
 
 clients = []
 
@@ -15,10 +16,37 @@ class WebSocketChatHandler(tornado.websocket.WebSocketHandler):
     print("open", "WebSocketChatHandler")
     clients.append(self)
 
+  ''' on_message is triggered when the client sends a string. All messages
+  should be received in stringified JSON, and should be sent back to the client
+  in the same form. Messages have a "type", either "message" or "username".
+  Messages that are usernames include a username and password to be processed
+  in the database. Messages that are simply messages should be handled by
+  getting a response from the chatbot, and returning both the message and its
+  response to the client (separately).
+  '''
   def on_message(self, message):        
+    dict = json.loads(message)
     print message
-    self.write_message(message)
+    # handle different types of messages
+    if dict["type"] == "username":
+      self.load_user( dict )
+    elif dict["type"] == "message":
+      self.process_chat( dict )
+    
+    
         
+  def load_user(self, message_dict ):
+    d = { 'user': '[SYSTEM]',
+          'message': "Login attempt by %s." % (message_dict["user"])}
+    self.write_message( json.dumps(d) )
+    # TODO: load or create user data
+    return
+
+  def process_chat( self, message_dict ):
+    message_dict.pop( "type", None )
+    self.write_message(json.dumps(message_dict))
+    # TODO: Get response from the chatbot and return it
+
   def on_close(self):
     clients.remove(self)
 
