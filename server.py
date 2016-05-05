@@ -6,7 +6,10 @@ import json
 import alchemy
 import time
 
+from filesystem import *
+
 clients = []
+
 
 class IndexHandler(tornado.web.RequestHandler):
   @tornado.web.asynchronous
@@ -14,6 +17,9 @@ class IndexHandler(tornado.web.RequestHandler):
     request.render("index.html")
 
 class WebSocketChatHandler(tornado.websocket.WebSocketHandler):
+
+  unique_id = 0
+
   def open(self, *args):
     print("open", "WebSocketChatHandler")
     clients.append(self)
@@ -31,9 +37,11 @@ class WebSocketChatHandler(tornado.websocket.WebSocketHandler):
     print message
     # handle different types of messages
     if dict["type"] == "username":
+      self.unique_id = start(dict)
       self.load_user(dict)
     elif dict["type"] == "message":
       self.process_chat(dict)
+      
 
 
 
@@ -41,6 +49,16 @@ class WebSocketChatHandler(tornado.websocket.WebSocketHandler):
     d = { 'user': '[SYSTEM]',
           'message': "Login attempt by %s." % (message_dict["user"])}
     self.write_message(json.dumps(d))
+
+    lines = displayFile(self.unique_id)
+    if lines != None:
+      for line in lines:
+        if line != '':
+          l = line.split(':')
+          print(l)
+          d = { 'user': l[0], 'message': l[1] }
+          self.write_message(json.dumps(d))
+    
     # TODO: load or create user data
     return
 
@@ -52,6 +70,7 @@ class WebSocketChatHandler(tornado.websocket.WebSocketHandler):
     # create message dict
     d = { 'user': 'RayK',
           'message': "%s." % bot_response}
+    chat(self.unique_id, message_dict, d)
     print bot_response
     # calculate delay using WPM = 90
     delay = alchemy.calculateDelay(bot_response)

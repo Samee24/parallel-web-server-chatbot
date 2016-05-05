@@ -21,33 +21,36 @@ def displayFile(uid):
     try:
         file = open(filePath, 'r')
     except IOError:
-        print("404: File Not Found")
+        print("Failing to open")
+        return None
     else:
-        lines = [line.strip('\n') for line in file]   
-        for line in lines:
-            print(line) 
+        lines = [line.strip('\n') for line in file]
         file.close()
+        return lines
+        
 
 
 
 def chat(uid, userInput, botResponse):
     # current display trigger word is 'print transcript'
-    if userInput.get('message') == 'print transcript' or userInput.get('message') == 'print transcript\n':
-        displayFile(uid)
-
+   # if userInput.get('message') == 'print transcript' or userInput.get('message') == 'print transcript\n':
+ #       displayFile(uid)
+    if uid == 0:
+        pass
     else:
         filePath = "./files/" + str(uid) + ".txt"
         try:
-            file = open(filepath, 'a')  # opens file for appending
+            file = open(filePath, 'a')  # opens file for appending
                                         # creates new file if not already there
         except IOError:
             print("Problem opening file")
         else:
             # get user input
-            file.write(userInput.get('user') + ": " +
+            file.write(userInput.get('user') + ":" +
                        userInput.get('message') + "\n")
             # get chatbot response
-            file.write("bot does not respond yet\n")    
+            file.write(botResponse.get('user') + ":" +
+                       botResponse.get('message') + "\n")
 
             file.close()
 
@@ -55,7 +58,9 @@ def start(message):
 
     currentUsername = message.get('user')       # get username from prompt
     currentPassword = message.get('password')   # get password from prompt
-    
+
+    if message.get('user') == 'Anonymous':
+        return 0
     
     try:
         currentUser = backend.get(Person,{'user' : currentUsername,
@@ -67,7 +72,7 @@ def start(message):
                            'password' : currentPassword,
                            'unique_id' : str(uuid.uuid4())
                            })
-        
+        print("DNE")
         backend.save(newUser)
         backend.commit()
         
