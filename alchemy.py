@@ -34,10 +34,10 @@ def getRaykResponse(user_input):    # return chat bot response
         # If a rule exists for our word, then use it
         if word.lower() in rule_dict:
           return rule_dict[word.lower()]
-        else:
-          return ERROR_PROMPT
   else:
       print('Error in keyword extaction call: ', response_key['statusInfo'])
+  # if nothing is returned, return error
+  return ERROR_PROMPT
 
 def calculateDelay(response):  # return delay in seconds for each reponse using WPM = 90
   delay = len(response.split())/1.5
