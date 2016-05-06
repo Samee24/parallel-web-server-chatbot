@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import uuid # for random unique identifiers
-
+import os
 # http://blitzdb.readthedocs.org/en/latest/
 from blitzdb import Document
 from blitzdb import FileBackend
@@ -9,6 +9,16 @@ from blitzdb import FileBackend
 # /path/to/db
 backend = FileBackend("./db")
 
+# create directory for saving chat logs if directory does not already exist
+try:
+    os.makedirs("./files")
+except OSError as exception:
+    if exception != errno.EEXIST:
+        raise
+    else:
+        pass
+
+# needed for storing user info in database
 class Person(Document):
     pass
 
@@ -16,18 +26,23 @@ class Person(Document):
 # Parameters:   takes unique ID representing a specific user
 # Returns:      a list containing the lines of the user's chat file
 def displayFile(uid):
-    #requires that files are stored in seperate directory files
-    filePath = "./files/" + str(uid) + ".txt"
+    if uid == 0:  # don't bother for anonymous users
+        pass
+    
+    else:
+    
+        #requires that files are stored in seperate directory files
+        filePath = "./files/" + str(uid) + ".txt"
 
-    try: # attempt to open file
-        file = open(filePath, 'r')
-    except IOError:  # if open fails
-        print("Failing to open")
-        return None
-    else: # otherwise make list of lines and return it
-        lines = [line.strip('\n') for line in file]
-        file.close()
-        return lines
+        try: # attempt to open file
+            file = open(filePath, 'r')
+        except IOError:  # if open fails
+            print("Failing to open")
+            return None
+        else: # otherwise make list of lines and return it
+            lines = [line.strip('\n') for line in file]
+            file.close()
+            return lines
         
 
 # Parameters: uid, unique ID representing a specific user
@@ -60,7 +75,7 @@ def start(message):
     currentUsername = message.get('user')       # get username from prompt
     currentPassword = message.get('password')   # get password from prompt
 
-    if message.get('user') == 'Anonymous':
+    if currentUsername == 'Anonymous':
         return 0  # default value for anonymous user
     
     try:  # attempt to find user
