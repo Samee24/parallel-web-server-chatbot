@@ -55,7 +55,6 @@ class WebSocketChatHandler(tornado.websocket.WebSocketHandler):
       for line in lines:
         if line != '':
           l = line.split(':')
-          print(l)
           d = { 'user': l[0], 'message': l[1] }
           self.write_message(json.dumps(d))
     
