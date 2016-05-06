@@ -13,29 +13,27 @@ class Person(Document):
     pass
 
 
-# current display trigger word is 'print transcript'
+# Parameters:   takes unique ID representing a specific user
+# Returns:      a list containing the lines of the user's chat file
 def displayFile(uid):
     #requires that files are stored in seperate directory files
     filePath = "./files/" + str(uid) + ".txt"
 
-    try:
+    try: # attempt to open file
         file = open(filePath, 'r')
-    except IOError:
+    except IOError:  # if open fails
         print("Failing to open")
         return None
-    else:
+    else: # otherwise make list of lines and return it
         lines = [line.strip('\n') for line in file]
         file.close()
         return lines
         
 
-
-
+# Parameters: uid, unique ID representing a specific user
+# Function appends new user chat and bot response to user's file
 def chat(uid, userInput, botResponse):
-    # current display trigger word is 'print transcript'
-   # if userInput.get('message') == 'print transcript' or userInput.get('message') == 'print transcript\n':
- #       displayFile(uid)
-    if uid == 0:
+    if uid == 0: # if user is anonymous 
         pass
     else:
         filePath = "./files/" + str(uid) + ".txt"
@@ -45,42 +43,41 @@ def chat(uid, userInput, botResponse):
         except IOError:
             print("Problem opening file")
         else:
-            # get user input
+            # get user input and write to file
             file.write(userInput.get('user') + ":" +
                        userInput.get('message') + "\n")
-            # get chatbot response
+            # get chatbot response and write to file
             file.write(botResponse.get('user') + ":" +
                        botResponse.get('message') + "\n")
 
             file.close()
 
+
+# Parameters:   message, a dictionary with entries for a username and password
+# Returns:      the unique ID of the user, to be used by server.py
 def start(message):
 
     currentUsername = message.get('user')       # get username from prompt
     currentPassword = message.get('password')   # get password from prompt
 
     if message.get('user') == 'Anonymous':
-        return 0
+        return 0  # default value for anonymous user
     
-    try:
+    try:  # attempt to find user
         currentUser = backend.get(Person,{'user' : currentUsername,
                                           'password' : currentPassword
                                           })
-
     except Person.DoesNotExist:
+        # if user has not used system before, create database entry
         newUser = Person({ 'user' : currentUsername,
                            'password' : currentPassword,
                            'unique_id' : str(uuid.uuid4())
                            })
-        print("DNE")
         backend.save(newUser)
         backend.commit()
         
         return newUser.unique_id
 
-    except Person.MultipleDocumentsReturned:
-        print("ERROR: Multiple Documents Returned")
-    
     else:
         return currentUser.unique_id
         
