@@ -34,14 +34,24 @@ class WebSocketChatHandler(tornado.websocket.WebSocketHandler):
   response to the client (separately).
   '''
   def on_message(self, message):
+
+    start_time = time.time()
+    print("Start time: " + str(start_time))
+    
     dict = json.loads(message)
     print message
     # handle different types of messages
     if dict["type"] == "username":
       self.unique_id = fs.start(dict)
       self.load_user(dict)
+      delay = 0
     elif dict["type"] == "message":
-      self.process_chat(dict)
+      delay = self.process_chat(dict)
+
+    end_time = time.time()
+    print("End time: " + str(end_time))
+    print("Added delay: " + str(delay))
+    print("Time taken to process message: " + str(end_time - start_time - delay))
 
 
 
@@ -88,6 +98,9 @@ class WebSocketChatHandler(tornado.websocket.WebSocketHandler):
     time.sleep(alchemy.calculateDelay(bot_response))
     # send response to client
     self.write_message(json.dumps(d))
+
+    # for our timing tests
+    return delay
 
   '''on_close removes the websocket from the server's list when the socket
   is closed.'''
