@@ -35,8 +35,8 @@ class WebSocketChatHandler(tornado.websocket.WebSocketHandler):
   '''
   def on_message(self, message):
 
-    start_time = time.time()
-    print("Start time: " + str(start_time))
+    start_time = time.time() # timing
+    print("Start time: " + str(start_time)) # timing
     
     dict = json.loads(message)
     print message
@@ -48,9 +48,9 @@ class WebSocketChatHandler(tornado.websocket.WebSocketHandler):
     elif dict["type"] == "message":
       delay = self.process_chat(dict)
 
-    end_time = time.time()
-    print("End time: " + str(end_time))
-    print("Added delay: " + str(delay))
+    end_time = time.time()   # timing
+    print("End time: " + str(end_time)) # timing
+    print("Added delay: " + str(delay)) # timing
     print("Time taken to process message: " + str(end_time - start_time - delay))
 
 
