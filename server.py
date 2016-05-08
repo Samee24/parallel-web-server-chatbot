@@ -41,7 +41,7 @@ class WebSocketChatHandler(tornado.websocket.WebSocketHandler):
       self.load_user(dict)
     elif dict["type"] == "message":
       self.process_chat(dict)
-      
+
 
 
 
@@ -57,7 +57,7 @@ class WebSocketChatHandler(tornado.websocket.WebSocketHandler):
           l = line.split(':')
           d = { 'user': l[0], 'message': l[1] }
           self.write_message(json.dumps(d))
-    
+
     # TODO: load or create user data
     return
 
@@ -80,6 +80,7 @@ class WebSocketChatHandler(tornado.websocket.WebSocketHandler):
 
   def on_close(self):
     clients.remove(self)
+
 
 app = tornado.web.Application([(r'/chat', WebSocketChatHandler), (r'/', IndexHandler)])
 

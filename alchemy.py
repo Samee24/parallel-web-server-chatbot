@@ -5,8 +5,11 @@ alchemyapi = AlchemyAPI()
 # Some phrases that will be used by the bot
 GREETING_PROMPT = "Hey there, student!"
 ERROR_PROMPT = "Hey, I couldn't really understand you. Try saying that again."
-DIVERSITY_PROMPT = "We are a very inclusive college, by virtue of our data-drive approach"
-SHACS_PROMPT = "Have you heard of SHACS? It's a magical place where all of your health problems will get solved! It's open Mon-Fri, 8 am - 5 pm and is located at the bottom of the forum! Here's a Google maps link: https://goo.gl/maps/T472hRBidgN2"
+DIVERSITY_PROMPT = "We are a very inclusive college, by virtue of our data-driven approach"
+SHACS_PROMPT = "Have you heard of SHACS? It's a magical place where all of your health problems will get solved! It's open Mon-Fri, 8 am - 5 pm and is located at the bottom of the forum!\nHere's a Google maps link: https://goo.gl/maps/T472hRBidgN2"
+DARI_BARN_PROMPT = "Here's a neat little thing made by the S&B to help you choose you what you should get!\n http://www.thesandb.com/wp-content/uploads/2016/05/dari-barn.jpg\n Where is Dari Barn? Here's a Google maps link: https://goo.gl/maps/52VVtLN4tbo"
+ICE_CREAM_PROMPT = "You should try going to Dari Barn -- Grinnell's favorite place to get ice-cream!\n Here's a Google maps link: https://goo.gl/maps/52VVtLN4tbo"
+
 # Print opening message
 # print("Hey, I'm Rayk! Your friendly neighborhood president!.")
 # Our set of rules --  a dictionary
@@ -20,7 +23,12 @@ rule_dict = {
     'help': SHACS_PROMPT,
     'sick': SHACS_PROMPT,
     'inclusivity': DIVERSITY_PROMPT,
-    'diversity': DIVERSITY_PROMPT
+    'diversity': DIVERSITY_PROMPT,
+    'ice-cream': ICE_CREAM_PROMPT,
+    'ice' : ICE_CREAM_PROMPT,
+    'cream': ICE_CREAM_PROMPT,
+    'dari': DARI_BARN_PROMPT,
+    'barn': DARI_BARN_PROMPT
   }
 
 def getRaykResponse(user_input):    # return chat bot response
@@ -39,10 +47,10 @@ def getRaykResponse(user_input):    # return chat bot response
   # if nothing is returned, return error
   return ERROR_PROMPT
 
-def calculateDelay(response):  # return delay in seconds for each reponse using WPM = 90
-  delay = len(response.split())/1.5
-  if (delay > 4):
-    delay = 4
+def calculateDelay(response):  # return delay in seconds for each reponse using WPM = 120
+  delay = len(response.split())/2
+  if (delay > 2):
+    delay = 2
   return delay
 
 
