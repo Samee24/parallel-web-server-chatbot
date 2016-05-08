@@ -2,6 +2,7 @@
 
 import uuid # for random unique identifiers
 import os
+import errno
 # http://blitzdb.readthedocs.org/en/latest/
 from blitzdb import Document
 from blitzdb import FileBackend
@@ -13,10 +14,10 @@ backend = FileBackend("./db")
 try:
     os.makedirs("./files")
 except OSError as exception:
-    if exception != errno.EEXIST:
-        raise
-    else:
+    if exception.errno == errno.EEXIST:
         pass
+    else:
+        raise
 
 # needed for storing user info in database
 class Person(Document):
