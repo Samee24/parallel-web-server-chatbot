@@ -5,21 +5,22 @@ import tornado.websocket
 import json
 import alchemy
 import time
-
-from filesystem import *
+import filesystem as fs
 
 clients = []
 
 
 class IndexHandler(tornado.web.RequestHandler):
+  '''get call loads the webpage at index.html'''
   @tornado.web.asynchronous
   def get(request):
     request.render("index.html")
 
 class WebSocketChatHandler(tornado.websocket.WebSocketHandler):
 
-  unique_id = 0
+  unique_id = 0 # id for the logged-in user
 
+  '''open is called when the websocket connection is opened'''
   def open(self, *args):
     print("open", "WebSocketChatHandler")
     clients.append(self)
@@ -37,30 +38,39 @@ class WebSocketChatHandler(tornado.websocket.WebSocketHandler):
     print message
     # handle different types of messages
     if dict["type"] == "username":
-      self.unique_id = start(dict)
+      self.unique_id = fs.start(dict)
       self.load_user(dict)
     elif dict["type"] == "message":
       self.process_chat(dict)
       
 
 
-
+  '''load_user takes a dictionary containing the message data for a
+  log-in type of message. It checks if the user is interested in logging
+  in, and if they have an existing chat history and the correct password.
+  If they do, it loads the entire transcript for that user.'''
   def load_user(self, message_dict ):
+    # Send a confirmation message to the client
     d = { 'user': '[SYSTEM]',
           'message': "User is %s." % (message_dict["user"])}
     self.write_message(json.dumps(d))
 
-    lines = displayFile(self.unique_id)
+    # Get the existing transcript
+    lines = fs.displayFile(self.unique_id)
+    # If the transcript exists, send it to the client to display
     if lines != None:
       for line in lines:
         if line != '':
           l = line.split(':')
           d = { 'user': l[0], 'message': l[1] }
           self.write_message(json.dumps(d))
-    
-    # TODO: load or create user data
-    return
 
+
+  '''process_chat is called when the socket receives a standard message
+  from the client. It sends that message back to the client to be displayed
+  in the chat, and then sends the message to our Alchemy program to generate
+  an appropriate response. It then sends that response back to the server as
+  well.'''
   def process_chat(self, message_dict ):
     message_dict.pop( "type", None )
     self.write_message(json.dumps(message_dict))
@@ -69,7 +79,7 @@ class WebSocketChatHandler(tornado.websocket.WebSocketHandler):
     # create message dict
     d = { 'user': 'RayK',
           'message': "%s." % bot_response}
-    chat(self.unique_id, message_dict, d)
+    fs.chat(self.unique_id, message_dict, d)
     print bot_response
     # calculate delay using WPM = 90
     delay = alchemy.calculateDelay(bot_response)
@@ -77,7 +87,9 @@ class WebSocketChatHandler(tornado.websocket.WebSocketHandler):
     time.sleep(alchemy.calculateDelay(bot_response))
     # send response to client
     self.write_message(json.dumps(d))
-
+  
+  '''on_close removes the websocket from the server's list when the socket
+  is closed.'''
   def on_close(self):
     clients.remove(self)
 
