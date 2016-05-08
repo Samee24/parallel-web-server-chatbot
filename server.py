@@ -47,7 +47,7 @@ class WebSocketChatHandler(tornado.websocket.WebSocketHandler):
 
   def load_user(self, message_dict ):
     d = { 'user': '[SYSTEM]',
-          'message': "Login attempt by %s." % (message_dict["user"])}
+          'message': "User is %s." % (message_dict["user"])}
     self.write_message(json.dumps(d))
 
     lines = displayFile(self.unique_id)
