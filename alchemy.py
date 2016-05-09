@@ -9,6 +9,7 @@ DIVERSITY_PROMPT = "We are a very inclusive college, by virtue of our data-drive
 SHACS_PROMPT = "Have you heard of SHACS? It's a magical place where all of your health problems will get solved! It's open Mon-Fri, 8 am - 5 pm and is located at the bottom of the forum!\nHere's a Google maps link: https://goo.gl/maps/T472hRBidgN2"
 DARI_BARN_PROMPT = "Here's a neat little thing made by the S&B to help you choose you what you should get!\n http://www.thesandb.com/wp-content/uploads/2016/05/dari-barn.jpg\n Where is Dari Barn? Here's a Google maps link: https://goo.gl/maps/52VVtLN4tbo"
 ICE_CREAM_PROMPT = "You should try going to Dari Barn -- Grinnell's favorite place to get ice-cream!\n Here's a Google maps link: https://goo.gl/maps/52VVtLN4tbo"
+GRINNELL_BETTER_PROMPT = "I just want Grinnell to be a welcoming place for all!"
 
 # Print opening message
 # print("Hey, I'm Rayk! Your friendly neighborhood president!.")
@@ -27,8 +28,8 @@ rule_dict = {
     'ice-cream': ICE_CREAM_PROMPT,
     'ice' : ICE_CREAM_PROMPT,
     'cream': ICE_CREAM_PROMPT,
-    'dari': DARI_BARN_PROMPT,
-    'barn': DARI_BARN_PROMPT
+    'dari barn': DARI_BARN_PROMPT,
+    'mission': GRINNELL_BETTER_PROMPT
   }
 
 def getRaykResponse(user_input):    # return chat bot response
@@ -38,7 +39,8 @@ def getRaykResponse(user_input):    # return chat bot response
   if response_key['status'] == 'OK':
     # Loop over all identified keywords
       for keyword in response_key['keywords']:
-        word = keyword['text'].encode('utf-8')
+        print keyword
+        word = keyword['text']
         # If a rule exists for our word, then use it
         if word.lower() in rule_dict:
           return rule_dict[word.lower()]

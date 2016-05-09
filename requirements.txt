@@ -1,0 +1,3 @@
+tornado==4.3
+blitzdb==0.2.12
+requests==2.7.0

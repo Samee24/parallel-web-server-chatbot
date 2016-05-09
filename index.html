@@ -6,41 +6,45 @@
       // Basic functionality from http://code.runnable.com/UqDMKY-VwoAMABDk/simple-websockets-chat-with-tornado-for-python
       var ws;
       var username;
-      
+
       function createChatEntry(username, message) {
         var entry = document.createElement("div");
         entry.class = "chat_entry";
-        
+
         var dom_uname = document.createElement("span");
         dom_uname.class = "chat_username";
         dom_uname.innerHTML = username+": ";
         entry.appendChild(dom_uname);
-        
+
         var dom_msg = document.createElement("span");
         dom_msg.class = "chat_message";
         dom_msg.innerHTML = message;
         entry.appendChild(dom_msg);
-        
+
         return entry;
       }
-      
+
       function openWS(messageContainer) {
         ws = new WebSocket("ws://localhost:8888/chat");
         ws.onmessage = function(e) {
+          var d = new Date();
           var data = JSON.parse(e.data);
           messageContainer.appendChild(createChatEntry(data.user, data.message));
+          console.log(d.getTime() - data.time)
         };
         ws.onclose = function(e) {
           openWS(messageContainer);
         };
       }
-      
+
       function sendMessage() {
-        var data = { 
+        var d = new Date();
+        var data = {
           type: "message",
+          time: d.getTime(),
           user: username,
-          message: document.getElementById("message").value };
-        
+          message: document.getElementById("message").value};
+
         if(username && data.message) {
           ws.send(JSON.stringify(data));
         }
@@ -63,7 +67,7 @@
         messageContainer.appendChild(createChatEntry("[SYSTEM]", "Pick a username and start sending out messages."));
         username = window.prompt("Enter your username, or leave blank if you wish to remain anonymous:");
         openWS(messageContainer);
-        if( username != "" ) {      
+        if( username != "" ) {
           pass = window.prompt("Enter a password to save your session:")
           data = { type: "username", user: username, password: pass };
           sendUser(data);

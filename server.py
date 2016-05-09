@@ -2,6 +2,7 @@
 import tornado.ioloop
 import tornado.web
 import tornado.websocket
+import tornado.options
 import json
 import alchemy
 import time
@@ -34,24 +35,14 @@ class WebSocketChatHandler(tornado.websocket.WebSocketHandler):
   response to the client (separately).
   '''
   def on_message(self, message):
-
-    start_time = time.time() # timing
-    print("Start time: " + str(start_time)) # timing
-    
     dict = json.loads(message)
     print message
     # handle different types of messages
     if dict["type"] == "username":
       self.unique_id = fs.start(dict)
       self.load_user(dict)
-      delay = 0
     elif dict["type"] == "message":
-      delay = self.process_chat(dict)
-
-    end_time = time.time()   # timing
-    print("End time: " + str(end_time)) # timing
-    print("Added delay: " + str(delay)) # timing
-    print("Time taken to process message: " + str(end_time - start_time - delay))
+      self.process_chat(dict)
 
 
 
@@ -89,7 +80,8 @@ class WebSocketChatHandler(tornado.websocket.WebSocketHandler):
     bot_response = alchemy.getRaykResponse(message_dict["message"])
     # create message dict
     d = { 'user': 'RayK',
-          'message': "%s." % bot_response}
+          'message': "%s." % bot_response,
+          'time': message_dict["time"]}
     fs.chat(self.unique_id, message_dict, d)
     print bot_response
     # calculate delay using WPM = 90
@@ -98,9 +90,6 @@ class WebSocketChatHandler(tornado.websocket.WebSocketHandler):
     time.sleep(alchemy.calculateDelay(bot_response))
     # send response to client
     self.write_message(json.dumps(d))
-
-    # for our timing tests
-    return delay
 
   '''on_close removes the websocket from the server's list when the socket
   is closed.'''

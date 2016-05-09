@@ -3,7 +3,6 @@
 import uuid # for random unique identifiers
 import os
 import errno
-
 # http://blitzdb.readthedocs.org/en/latest/
 from blitzdb import Document
 from blitzdb import FileBackend
